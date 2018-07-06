@@ -6,19 +6,21 @@
 package Server;
 
 import StringWithID.StringWithID;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 /**
  *
  * @author C
  */
 public class Server {
-
-    public static void main(String args[]) throws Exception {
-
-	System.out.println("Подключение к базе запущено");
+        public static void main(String[] args) throws SocketException, IOException, ClassNotFoundException {
+            
+        System.out.println("Подключение к базе запущено");
+	
 	//буфер отправки
 	byte[] sendData = new byte[1024];
 	//буфер получения
@@ -31,21 +33,22 @@ public class Server {
 	    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 	    serverSocket.receive(receivePacket);
-
+	    
 	    //десериализуем
 	    StringWithID swid = StringWithID.deserialize(receivePacket.getData());
-
+	    
 	    System.out.println("Получено: " + swid.toString() + " от Клиент #" + swid.toInt());
 	    InetAddress IPAddress = receivePacket.getAddress();
 	    int port = receivePacket.getPort();
-
+	    
 	    //обработка
-	    StringWithID NewSWID = new StringWithID(swid.toInt(), swid.toString().toUpperCase());
-
+	    StringWithID NewSWID = new StringWithID(swid.toInt(),"---"+swid.toString().toUpperCase());
+	    
 	    sendData = StringWithID.serialize(NewSWID);
 	    DatagramPacket sendPacket
 		    = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 	    serverSocket.send(sendPacket);
-	}
+        
     }
+}
 }
